@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dépôt d'Événement - Espace Organisateur</title>
+    <!-- Framework CSS Tailwind pour un rendu moderne -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .step { display: none; }
+        .step.active { display: block; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <div class="max-w-3xl w-full mx-auto my-10 p-8 bg-white rounded-xl shadow-md border border-gray-100">
+        
+        <!-- En-tête avec Fil d'Ariane (5 Étapes) -->
+        <div class="text-center mb-8 border-b border-gray-100 pb-6">
+            <h1 class="text-2xl font-bold text-gray-900">Publier un événement</h1>
+            <p class="text-gray-500 mt-1 text-sm">Remplissez ce formulaire pour figurer dans notre agenda.</p>
+            
+            <div class="flex items-center justify-between max-w-lg mx-auto mt-6">
+                <div class="flex flex-col items-center step-indicator" data-step="1">
+                    <span class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center font-bold justify-center text-sm shadow-md">1</span>
+                    <span class="text-[10px] mt-1 font-semibold text-blue-600">Général</span>
+                </div>
+                <div class="h-0.5 bg-gray-200 flex-1 mx-1 -mt-4"></div>
+                <div class="flex flex-col items-center step-indicator" data-step="2">
+                    <span class="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center font-bold justify-center text-sm">2</span>
+                    <span class="text-[10px] mt-1 font-medium text-gray-400">Dates/Heures</span>
+                </div>
+                <div class="h-0.5 bg-gray-200 flex-1 mx-1 -mt-4"></div>
+                <div class="flex flex-col items-center step-indicator" data-step="3">
+                    <span class="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center font-bold justify-center text-sm">3</span>
+                    <span class="text-[10px] mt-1 font-medium text-gray-400">Public/Tarifs</span>
+                </div>
+                <div class="h-0.5 bg-gray-200 flex-1 mx-1 -mt-4"></div>
+                <div class="flex flex-col items-center step-indicator" data-step="4">
+                    <span class="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center font-bold justify-center text-sm">4</span>
+                    <span class="text-[10px] mt-1 font-medium text-gray-400">Contact</span>
+                </div>
+                <div class="h-0.5 bg-gray-200 flex-1 mx-1 -mt-4"></div>
+                <div class="flex flex-col items-center step-indicator" data-step="5">
+                    <span class="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center font-bold justify-center text-sm">5</span>
+                    <span class="text-[10px] mt-1 font-medium text-gray-400">Récapitulatif</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire Principal -->
+        <form id="eventForm" onsubmit="handleSubmit(event)">
+            
+            <!-- ÉTAPE 1 : INFOS GÉNÉRALES -->
+            <div class="step active" id="step-1">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">1. Présentation de l'événement</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nom de l'événement *</label>
+                        <input type="text" id="eventName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ex: Festival du Cinéma de Plein Air">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Adresse exacte du lieu *</label>
+                        <input type="text" id="eventAddress" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ex: 12 rue de la République, 75001 Paris">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Description de l'événement *</label>
+                        <textarea id="eventDesc" required rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Décrivez le programme..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 2 : DATES ET HORAIRES -->
+            <div class="step" id="step-2">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">2. Choix des dates & Horaires</h3>
+                
+                <!-- 2.1 Choix du format unique (Boutons Radios) -->
+                <div class="bg-gray-50 p-5 rounded-xl mb-6 border border-gray-200">
+                    <label class="block text-sm font-bold text-gray-800 mb-3">Étape 2.1 : Sélectionnez le format de date de votre événement :</label>
+                    <div class="flex flex-wrap gap-5 mb-5 bg-white p-3 rounded-lg border border-gray-200">
+                        <label class="flex items-center cursor-pointer select-none">
+                            <input type="radio" name="dateCategoryGroup" value="unique" onchange="handleFormatChange('unique')" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                            <span class="ml-2 text-sm font-medium text-gray-700">Date unique</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer select-none">
+                            <input type="radio" name="dateCategoryGroup" value="multiple" onchange="handleFormatChange('multiple')" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                            <span class="ml-2 text-sm font-medium text-gray-700">Dates multiples / éparses</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer select-none">
+                            <input type="radio" name="dateCategoryGroup" value="range" onchange="handleFormatChange('range')" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                            <span class="ml-2 text-sm font-medium text-gray-700">Plages de dates (Du... au...)</span>
+                        </label>
+                    </div>
+
+                    <!-- Zones de Saisie (Une seule visible à la fois) -->
+                    <div class="space-y-4">
+                        
+                        <!-- Zone Date Unique -->
+                        <div id="section-unique" class="hidden border-l-4 border-blue-500 bg-white p-4 rounded-r-lg shadow-sm">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-xs font-bold text-blue-700 uppercase tracking-wider">📌 Liste des Dates Uniques</span>
+                                <button type="button" onclick="addUniqueDateRow()" class="text-xs text-blue-600 font-bold hover:underline">+ Ajouter une date unique</button>
+                            </div>
+                            <div id="container-unique" class="space-y-2"></div>
+                        </div>
+
+                        <!-- Zone Dates Multiples -->
+                        <div id="section-multiple" class="hidden border-l-4 border-purple-500 bg-white p-4 rounded-r-lg shadow-sm">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-xs font-bold text-purple-700 uppercase tracking-wider">🌿 Groupes de Dates Éparses</span>
+                                <button type="button" onclick="addMultipleDateRow()" class="text-xs text-purple-600 font-bold hover:underline">+ Ajouter une série de dates</button>
+                            </div>
+                            <div id="container-multiple" class="space-y-3"></div>
+                        </div>
+
+                        <!-- Zone Plages de Dates -->
+                        <div id="section-range" class="hidden border-l-4 border-green-500 bg-white p-4 rounded-r-lg shadow-sm">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-xs font-bold text-green-700 uppercase tracking-wider">📅 Plages Temporelles (Périodes)</span>
+                                <button type="button" onclick="addRangeDateRow()" class="text-xs text-green-600 font-bold hover:underline">+ Ajouter une plage de dates</button>
+                            </div>
+                            <div id="container-range" class="space-y-2"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 2.2 Attribution des horaires cloisonnés par ligne de date -->
+                <div class="border border-gray-200 rounded-xl p-5 bg-white">
+                    <h4 class="text-sm font-bold text-gray-800 mb-1">Étape 2.2 : Planification des horaires par période / date</h4>
+                    <p class="text-xs text-gray-500 border-b border-gray-100 pb-3 mb-4">Chaque élément configuré ci-dessus dispose de son propre espace d'horaires pour éliminer les risques de chevauchement.</p>
+
+                    <div id="schedule-blocks-container" class="space-y-6">
+                        <!-- Les cartes de planification s'injectent ici automatiquement -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 3 : PUBLIC ET TARIFS -->
+            <div class="step" id="step-3">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">3. Public ciblé & Tarification</h3>
+                <div class="space-y-8">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">À quel type de public est destiné l'événement ?</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="inline-flex items-center p-3 bg-gray-50 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100">
+                                <input type="checkbox" name="audience" value="Tout public" class="h-4 w-4 rounded text-blue-600"> 
+                                <span class="ml-2 text-sm text-gray-700">Tout public</span>
+                            </label>
+                            <label class="inline-flex items-center p-3 bg-gray-50 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100">
+                                <input type="checkbox" name="audience" value="Enfants / Familles" class="h-4 w-4 rounded text-blue-600"> 
+                                <span class="ml-2 text-sm text-gray-700">Jeune public / Familles</span>
+                            </label>
+                        </div>
+                    </div>
+                    <hr class="border-gray-100">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Accès à l'événement :</label>
+                        <div class="flex space-x-4 mb-4">
+                            <label class="inline-flex items-center p-3 bg-white border border-gray-200 rounded-lg cursor-pointer"><input type="radio" name="pricingType" value="gratuit" checked onclick="document.getElementById('price-details-block').classList.add('hidden')" class="text-blue-600 h-4 w-4"><span class="ml-2 font-medium text-sm text-gray-700">Gratuit</span></label>
+                            <label class="inline-flex items-center p-3 bg-white border border-gray-200 rounded-lg cursor-pointer"><input type="radio" name="pricingType" value="payant" onclick="document.getElementById('price-details-block').classList.remove('hidden')" class="text-blue-600 h-4 w-4"><span class="ml-2 font-medium text-sm text-gray-700">Payant</span></label>
+                        </div>
+                        <div id="price-details-block" class="hidden bg-gray-50 p-4 border border-gray-200 rounded-lg">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Grille tarifaire et détails</label>
+                            <textarea id="eventPrice" rows="3" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ex: Tarif plein : 12€..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 4 : ORGANISATEURS -->
+            <div class="step" id="step-4">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">4. Qui organise cet événement ?</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nom de l'organisateur / structure *</label>
+                        <input type="text" id="orgName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Numéro de téléphone *</label>
+                            <input type="tel" id="orgPhone" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Adresse e-mail *</label>
+                            <input type="email" id="orgEmail" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 5 : RÉCAPITULATIF -->
+            <div class="step" id="step-5">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">5. Vérification avant publication</h3>
+                <p class="text-xs text-gray-500 mb-6">Prenez un instant pour relire les détails de votre événement avant l'envoi.</p>
+                <div id="recap-container" class="space-y-4"></div>
+            </div>
+
+            <!-- Boutons de Navigation -->
+            <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+                <button type="button" id="prevBtn" onclick="changeStep(-1)" class="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-100 transition hidden">Précédent</button>
+                <div class="flex-1 text-right">
+                    <button type="button" id="nextBtn" onclick="changeStep(1)" class="px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 shadow-sm transition">Suivant</button>
+                    <button type="submit" id="submitBtn" class="px-5 py-2.5 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 shadow-sm transition hidden">Valider et Envoyer</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- SCRIPT LOGIQUE ET INTERACTIF -->
+    <script>
+        const joursSemaine = [
+            { nom: 'Lun', val: 1 }, { nom: 'Mar', val: 2 }, { nom: 'Mer', val: 3 },
+            { nom: 'Jeu', val: 4 }, { nom: 'Ven', val: 5 }, { nom: 'Sam', val: 6 }, { nom: 'Dim', val: 0 }
+        ];
+
+        let currentStep = 1;
+        const totalSteps = 5;
+
+        function validateCurrentStep() {
+            const currentStepEl = document.getElementById('step-' + currentStep);
+            const requiredInputs = currentStepEl.querySelectorAll('[required]');
+            let isValid = true;
+            requiredInputs.forEach(input => { if (!input.value.trim()) isValid = false; });
+            return isValid;
+        }
+
+        function changeStep(direction) {
+            if (direction === 1 && !validateCurrentStep()) {
+                alert("Veuillez remplir tous les champs obligatoires (*) de cette étape.");
+                return;
+            }
+            document.getElementById('step-' + currentStep).classList.remove('active');
+            currentStep += direction;
+            if (currentStep === 5) generateRecap();
+            
+            document.getElementById('step-' + currentStep).classList.add('active');
+
+            document.getElementById('prevBtn').classList.toggle('hidden', currentStep === 1);
+            if (currentStep === totalSteps) {
+                document.getElementById('nextBtn').classList.add('hidden');
+                document.getElementById('submitBtn').classList.remove('hidden');
+            } else {
+                document.getElementById('nextBtn').classList.remove('hidden');
+                document.getElementById('submitBtn').classList.add('hidden');
+            }
+            updateIndicators();
+        }
+
+        function updateIndicators() {
+            document.querySelectorAll('.step-indicator').forEach(ind => {
+                const stepNum = parseInt(ind.getAttribute('data-step'));
+                const circle = ind.querySelector('span:first-child');
+                const text = ind.querySelector('span:last-child');
+                if (stepNum === currentStep) {
+                    circle.className = "w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md";
+                    text.className = "text-[10px] mt-1 font-semibold text-blue-600";
+                } else if (stepNum < currentStep) {
+                    circle.className = "w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-sm shadow-md";
+                    text.className = "text-[10px] mt-1 font-medium text-green-600";
+                    circle.innerHTML = "✓";
+                } else {
+                    circle.className = "w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-sm";
+                    text.className = "text-[10px] mt-1 font-medium text-gray-400";
+                    circle.innerHTML = stepNum;
+                }
+            });
+        }
+
+        // --- ÉTAT DE CONFIGURATION (STATE CONTROLLER) ---
+        let computedPeriods = {};  // Mappe rowId -> Tableau d'objets de dates calculées
+        let periodSchedules = {};  // Mappe rowId -> Tableau de sous-blocs d'horaires
+        let rowDateHistory = {};   // Sauvegarde l'historique des dates générées par ligne pour isoler les décochages volontaires
+        let rowGlobalCounter = 0;
+        let subBlockCounter = 0;
+
+        // Écouteur global pour surveiller les modifications et recalculer les calendriers
+        document.getElementById('step-2').addEventListener('change', function(e) {
+            if (e.target.classList.contains('date-calc-trigger')) {
+                calculateDates();
+            }
+        });
+
+        // Activation exclusive via boutons radios de premier niveau
+        function handleFormatChange(selectedType) {
+            ['unique', 'multiple', 'range'].forEach(type => {
+                const section = document.getElementById('section-' + type);
+                const container = document.getElementById('container-' + type);
+                
+                if (type === selectedType) {
+                    section.classList.remove('hidden');
+                    if (container.children.length === 0) {
+                        if (type === 'unique') addUniqueDateRow();
+                        if (type === 'range') addRangeDateRow();
+                        if (type === 'multiple') addMultipleDateRow();
+                    }
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+            calculateDates();
+        }
+
+        // --- INJECTION DES LIGNES INDÉPENDANTES ---
+        function addUniqueDateRow() {
+            rowGlobalCounter++;
+            const rowId = 'row-' + rowGlobalCounter;
+            const container = document.getElementById('container-unique');
+            const div = document.createElement('div');
+            div.className = "date-row flex items-center gap-4 bg-gray-50/70 p-2.5 rounded-lg border border-gray-200 shadow-xs mt-2";
+            div.setAttribute('data-row-id', rowId);
+            div.innerHTML = `
+                <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2 py-1 rounded">Date unique</span>
+                <input type="date" class="unique-value date-calc-trigger px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none focus:ring-2 focus:ring-blue-500 text-gray-700">
+                <button type="button" onclick="removeDateRow('${rowId}', 'unique')" class="text-gray-400 hover:text-red-500 ml-auto p-1 text-sm">✕</button>
+            `;
+            container.appendChild(div);
+            calculateDates();
+        }
+
+        function addRangeDateRow() {
+            rowGlobalCounter++;
+            const rowId = 'row-' + rowGlobalCounter;
+            const container = document.getElementById('container-range');
+            const div = document.createElement('div');
+            div.className = "date-row flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-gray-50/70 p-2.5 rounded-lg border border-gray-200 shadow-xs mt-2";
+            div.setAttribute('data-row-id', rowId);
+            div.innerHTML = `
+                <span class="text-xs font-bold text-green-700 bg-green-50 px-2 py-1 rounded">Période</span>
+                <div class="flex items-center gap-2 w-full sm:w-auto text-xs">
+                    <span class="font-medium text-gray-500">Du :</span>
+                    <input type="date" class="range-start date-calc-trigger px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none focus:ring-2 focus:ring-blue-500 text-gray-700">
+                    <span class="font-medium text-gray-500">au :</span>
+                    <input type="date" class="range-end date-calc-trigger px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none focus:ring-2 focus:ring-blue-500 text-gray-700">
+                </div>
+                <button type="button" onclick="removeDateRow('${rowId}', 'range')" class="text-gray-400 hover:text-red-500 ml-auto p-1 text-sm">✕</button>
+            `;
+            container.appendChild(div);
+            calculateDates();
+        }
+
+        function addMultipleDateRow() {
+            rowGlobalCounter++;
+            const rowId = 'row-' + rowGlobalCounter;
+            const container = document.getElementById('container-multiple');
+            const div = document.createElement('div');
+            div.className = "date-row flex flex-col gap-2 bg-gray-50/70 p-3 rounded-lg border border-gray-200 shadow-xs mt-2";
+            div.setAttribute('data-row-id', rowId);
+            div.innerHTML = `
+                <div class="flex justify-between items-center border-b border-gray-200 pb-1.5">
+                    <span class="text-xs font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded">Série de dates</span>
+                    <button type="button" onclick="removeDateRow('${rowId}', 'multiple')" class="text-gray-400 hover:text-red-500 p-1 text-xs">✕</button>
+                </div>
+                <div class="inner-multiple-container flex flex-wrap gap-2 pt-1">
+                    <input type="date" class="multiple-value date-calc-trigger px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none focus:ring-2 focus:ring-blue-500 text-gray-700">
+                </div>
+                <button type="button" onclick="addDateToMultipleRow('${rowId}')" class="text-[11px] text-purple-600 font-bold hover:underline self-start">+ Ajouter un jour à cette série</button>
+            `;
+            container.appendChild(div);
+            calculateDates();
+        }
+
+        function addDateToMultipleRow(rowId) {
+            const row = document.querySelector(`[data-row-id="${rowId}"]`);
+            const innerContainer = row.querySelector('.inner-multiple-container');
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-1';
+            div.innerHTML = `
+                <input type="date" class="multiple-value date-calc-trigger px-3 py-1.5 border border-gray-300 rounded-lg text-xs outline-none focus:ring-2 focus:ring-blue-500 text-gray-700">
+                <button type="button" onclick="this.parentElement.remove(); calculateDates();" class="text-red-400 hover:text-red-600 text-xs px-1">✕</button>
+            `;
+            innerContainer.appendChild(div);
+            calculateDates();
+        }
+
+        function removeDateRow(rowId, type) {
+            const row = document.querySelector(`[data-row-id="${rowId}"]`);
+            if (row) row.remove();
+            
+            const container = document.getElementById('container-' + type);
+            if (container.children.length === 0) {
+                const radio = document.querySelector(`input[name="dateCategoryGroup"][value="${type}"]`);
+                if (radio) radio.checked = false;
+                document.getElementById('section-' + type).classList.add('hidden');
+            }
+            delete rowDateHistory[rowId]; // Nettoyage mémoire historique
+            calculateDates();
+        }
+
+        // --- CALCUL CENTRALISÉ PAR LIGNE CLOISONNÉE ---
+        function calculateDates() {
+            const activeRowIds = [];
+            
+            ['unique', 'multiple', 'range'].forEach(type => {
+                const isSectionVisible = !document.getElementById('section-' + type).classList.contains('hidden');
+                if (!isSectionVisible) return;
+                
+                const rows = document.querySelectorAll(`#container-${type} .date-row`);
+                rows.forEach((row) => {
+                    const rowId = row.getAttribute('data-row-id');
+                    activeRowIds.push(rowId);
+                    let currentBlockDates = [];
+                    let periodTitle = "";
+                    
+                    if (type === 'unique') {
+                        const val = row.querySelector('.unique-value')?.value;
+                        if (val) {
+                            currentBlockDates.push(new Date(val));
+                            periodTitle = `Date unique : Le ${formatDateFr(val)}`;
+                        } else {
+                            periodTitle = `Date unique (En attente de saisie)`;
+                        }
+                    } 
+                    else if (type === 'multiple') {
+                        const inputs = row.querySelectorAll('.multiple-value');
+                        inputs.forEach(input => {
+                            if (input.value) currentBlockDates.push(new Date(input.value));
+                        });
+                        periodTitle = `Série de dates éparses (${currentBlockDates.length} jours enregistrés)`;
+                    } 
+                    else if (type === 'range') {
+                        const startVal = row.querySelector('.range-start')?.value;
+                        const endVal = row.querySelector('.range-end')?.value;
+                        if (startVal && endVal) {
+                            let current = new Date(startVal);
+                            const end = new Date(endVal);
+                            let failsafe = 0;
+                            while (current <= end && failsafe < 366) {
+                                currentBlockDates.push(new Date(current));
+                                current.setDate(current.getDate() + 1);
+                                failsafe++;
+                            }
+                            periodTitle = `Période : Du ${formatDateFr(startVal)} au ${formatDateFr(endVal)}`;
+                        } else {
+                            periodTitle = `Plage temporelle (En attente de saisie)`;
+                        }
+                    }
+                    
+                    const seen = new Set();
+                    computedPeriods[rowId] = [];
+                    currentBlockDates.forEach(d => {
+                        const iso = d.toISOString().split('T')[0];
+                        if (!seen.has(iso)) {
+                            seen.add(iso);
+                            const formattedLabel = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+                            computedPeriods[rowId].push({ id: iso, label: formattedLabel, dayOfWeek: d.getDay() });
+                        }
+                    });
+                    computedPeriods[rowId].sort((a, b) => new Date(a.id) - new Date(b.id));
+                    computedPeriods[rowId].title = periodTitle;
+                    
+                    syncDatesForPeriod(rowId, computedPeriods[rowId]);
+                });
+            });
+            
+            // Purge des anciens blocs supprimés du DOM
+            Object.keys(computedPeriods).forEach(id => {
+                if (!activeRowIds.includes(id)) {
+                    delete computedPeriods[id];
+                    delete periodSchedules[id];
+                    delete rowDateHistory[id];
+                }
+            });
+            
+            renderScheduleBlocks();
+        }
+
+        function syncDatesForPeriod(rowId, datesArray) {
+            const currentIds = datesArray.map(d => d.id);
+
+            if (!periodSchedules[rowId]) {
+                // Premier chargement de la ligne : Tout est actif par défaut
+                rowDateHistory[rowId] = [...currentIds];
+                periodSchedules[rowId] = [
+                    {
+                        id: rowId + '-main',
+                        name: 'Horaire Principal (Tous les jours restants)',
+                        dates: [...currentIds],
+                        timeType: 'slots',
+                        startTime: '09:00',
+                        fixedTime: '14:00',
+                        slots: [{ start: '09:00', end: '12:00' }]
+                    }
+                ];
+                return;
+            }
+
+            const blocks = periodSchedules[rowId];
+            
+            // On nettoie les dates obsolètes si l'utilisateur a rétréci son calendrier
+            blocks.forEach(b => { 
+                b.dates = b.dates.filter(id => currentIds.includes(id)); 
+            });
+
+            // On isole les jours REÉLLEMENT nouveaux (ceux absents de l'historique de cette ligne)
+            const newDates = currentIds.filter(id => !rowDateHistory[rowId].includes(id));
+            
+            // On met à jour l'historique mémoire pour les prochains rafraîchissements
+            rowDateHistory[rowId] = [...new Set([...rowDateHistory[rowId], ...currentIds])];
+            
+            // On injecte UNIQUEMENT les vrais nouveaux jours dans le bloc principal
+            if (newDates.length > 0) {
+                const mainBlock = blocks.find(b => b.id === rowId + '-main');
+                if (mainBlock) {
+                    mainBlock.dates = [...new Set([...mainBlock.dates, ...newDates])];
+                }
+            }
+        }
+
+        // --- ACTIONS HORAIRES SOUS-GROUPES ---
+        function addSubScheduleBlock(rowId) {
+            subBlockCounter++;
+            const subId = rowId + '-sub-' + subBlockCounter;
+            if (!periodSchedules[rowId]) return;
+            periodSchedules[rowId].push({
+                id: subId,
+                name: 'Sous-groupe spécifique d\'horaires',
+                dates: [],
+                timeType: 'slots',
+                startTime: '09:00',
+                fixedTime: '14:00',
+                slots: [{ start: '09:00', end: '18:00' }]
+            });
+            renderScheduleBlocks();
+        }
+
+        function removeSubScheduleBlock(rowId, subId) {
+            const blocks = periodSchedules[rowId] || [];
+            const blockToRemove = blocks.find(b => b.id === subId);
+            const mainBlock = blocks.find(b => b.id === rowId + '-main');
+            if (mainBlock && blockToRemove) mainBlock.dates = [...new Set([...mainBlock.dates, ...blockToRemove.dates])];
+            periodSchedules[rowId] = blocks.filter(b => b.id !== subId);
+            renderScheduleBlocks();
+        }
+
+        function selectWeekdayForPeriodBlock(rowId, subId, dayValue) {
+            const periodDates = computedPeriods[rowId] || [];
+            const targetDates = periodDates.filter(d => d.dayOfWeek === dayValue).map(d => d.id);
+            if (targetDates.length === 0) return;
+            
+            const blocks = periodSchedules[rowId] || [];
+            const currentBlock = blocks.find(b => b.id === subId);
+            if (!currentBlock) return;
+            
+            const allAlreadyInBlock = targetDates.every(id => currentBlock.dates.includes(id));
+            if (allAlreadyInBlock) {
+                currentBlock.dates = currentBlock.dates.filter(id => !targetDates.includes(id));
+                if (subId !== rowId + '-main') {
+                    const mainBlock = blocks.find(b => b.id === rowId + '-main');
+                    if (mainBlock) mainBlock.dates = [...new Set([...mainBlock.dates, ...targetDates])];
+                }
+            } else {
+                blocks.forEach(b => {
+                    if (b.id === subId) b.dates = [...new Set([...b.dates, ...targetDates])];
+                    else b.dates = b.dates.filter(id => !targetDates.includes(id));
+                });
+            }
+            renderScheduleBlocks();
+        }
+
+        function handlePeriodDateCheckboxChange(rowId, subId, dateId, isChecked) {
+            const blocks = periodSchedules[rowId] || [];
+            if (isChecked) {
+                blocks.forEach(b => {
+                    if (b.id === subId) { if (!b.dates.includes(dateId)) b.dates.push(dateId); }
+                    else { b.dates = b.dates.filter(id => id !== dateId); }
+                });
+            } else {
+                blocks.forEach(b => { if (b.id === subId) b.dates = b.dates.filter(id => id !== dateId); });
+                if (subId !== rowId + '-main') {
+                    const mainBlock = blocks.find(b => b.id === rowId + '-main');
+                    if (mainBlock && !mainBlock.dates.includes(dateId)) mainBlock.dates.push(dateId);
+                }
+            }
+            renderScheduleBlocks();
+        }
+
+        function updatePeriodBlockTimeType(rowId, subId, type) {
+            const blocks = periodSchedules[rowId] || [];
+            const b = blocks.find(x => x.id === subId);
+            if (b) { b.timeType = type; renderScheduleBlocks(); }
+        }
+        function updatePeriodBlockSingleTime(rowId, subId, field, value) {
+            const blocks = periodSchedules[rowId] || [];
+            const b = blocks.find(x => x.id === subId);
+            if (b) b[field] = value;
+        }
+        function updatePeriodBlockSlot(rowId, subId, slotIndex, field, value) {
+            const blocks = periodSchedules[rowId] || [];
+            const b = blocks.find(x => x.id === subId);
+            if (b && b.slots[slotIndex]) b.slots[slotIndex][field] = value;
+        }
+        function addSlotToPeriodBlock(rowId, subId) {
+            const blocks = periodSchedules[rowId] || [];
+            const b = blocks.find(x => x.id === subId);
+            if (b) { b.slots.push({ start: '09:00', end: '17:00' }); renderScheduleBlocks(); }
+        }
+        function removeSlotFromPeriodBlock(rowId, subId, slotIndex) {
+            const blocks = periodSchedules[rowId] || [];
+            const b = blocks.find(x => x.id === subId);
+            if (b) { b.slots.splice(slotIndex, 1); renderScheduleBlocks(); }
+        }
+
+        // --- CONSTRUIRE L'ÉCRAN 2.2 DES HORAIRES ---
+        function renderScheduleBlocks() {
+            const container = document.getElementById('schedule-blocks-container');
+            container.innerHTML = '';
+            let totalDatesCount = 0;
+            
+            Object.keys(computedPeriods).forEach((rowId) => {
+                const periodDates = computedPeriods[rowId] || [];
+                if (periodDates.length === 0) return;
+                
+                totalDatesCount += periodDates.length;
+                
+                const periodCard = document.createElement('div');
+                periodCard.className = "border border-gray-300 bg-gray-50/50 rounded-xl p-5 mb-6 shadow-sm";
+                const periodTitle = computedPeriods[rowId].title || "Période";
+                
+                let html = `
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 pb-2 border-b border-gray-200">
+                        <h4 class="text-sm font-bold text-blue-900 flex items-center">
+                            <span class="inline-block w-2 h-2 rounded-full bg-blue-600 mr-2"></span>${periodTitle}
+                        </h4>
+                        <button type="button" onclick="addSubScheduleBlock('${rowId}')" class="text-xs bg-white border border-gray-300 text-gray-700 px-2.5 py-1 rounded-md font-semibold hover:bg-gray-50 shadow-2xs mt-2 sm:mt-0">
+                            + Isoler un horaire spécifique pour ce groupe
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                `;
+                
+                const blocks = periodSchedules[rowId] || [];
+                blocks.forEach((block, bIdx) => {
+                    const isMain = block.id === rowId + '-main';
+                    
+                    let weekdayShortcutsHTML = joursSemaine.map(day => {
+                        const totalInPeriod = periodDates.filter(d => d.dayOfWeek === day.val).length;
+                        if (totalInPeriod === 0) return '';
+                        const countInBlock = periodDates.filter(d => d.dayOfWeek === day.val && block.dates.includes(d.id)).length;
+                        
+                        let btnClass = "w-8 h-8 rounded-lg text-xs font-bold border transition-all ";
+                        if (countInBlock === totalInPeriod) btnClass += "bg-blue-600 border-blue-600 text-white shadow-xs";
+                        else if (countInBlock > 0) btnClass += "bg-blue-100 border-blue-300 text-blue-700";
+                        else btnClass += "bg-white border-gray-300 text-gray-600 hover:bg-gray-50";
+                        
+                        return `<button type="button" onclick="selectWeekdayForPeriodBlock('${rowId}', '${block.id}', ${day.val})" class="${btnClass}">${day.nom}</button>`;
+                    }).join('');
+                    
+                    let datePillsHTML = periodDates.map(date => {
+                        const isChecked = block.dates.includes(date.id);
+                        const assignedToOther = blocks.some(b => b.id !== block.id && b.dates.includes(date.id));
+                        
+                        let pillClass = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold cursor-pointer transition border ";
+                        if (isChecked) pillClass += "bg-blue-600 border-blue-600 text-white shadow-xs";
+                        else if (assignedToOther) pillClass += "bg-gray-100 border-gray-200 text-gray-400 opacity-40 cursor-not-allowed";
+                        else pillClass += "bg-white border-gray-300 text-gray-700 hover:bg-blue-50";
+                        
+                        return `
+                            <label class="${pillClass}">
+                                <input type="checkbox" ${isChecked ? 'checked' : ''} ${assignedToOther ? 'disabled' : ''} class="hidden" onchange="handlePeriodDateCheckboxChange('${rowId}', '${block.id}', '${date.id}', this.checked)">
+                                ${date.label}
+                            </label>
+                        `;
+                    }).join('');
+                    
+                    let inputAreaHTML = '';
+                    if (block.timeType === 'fixed') {
+                        inputAreaHTML = `<div class="flex items-center space-x-2"><span class="text-xs font-medium text-gray-600">Heure précise :</span><input type="time" value="${block.fixedTime}" oninput="updatePeriodBlockSingleTime('${rowId}', '${block.id}', 'fixedTime', this.value)" class="px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs outline-none"></div>`;
+                    } else if (block.timeType === 'slots') {
+                        inputAreaHTML = `
+                            <div class="space-y-2">
+                                <div class="flex flex-wrap gap-2">
+                                    ${block.slots.map((slot, sIdx) => `
+                                        <div class="flex items-center space-x-2 bg-gray-50 border border-gray-200 rounded-lg p-1.5 shadow-sm">
+                                            <span class="text-[11px] font-semibold text-gray-500">De</span>
+                                            <input type="time" value="${slot.start}" oninput="updatePeriodBlockSlot('${rowId}', '${block.id}', ${sIdx}, 'start', this.value)" class="px-1.5 py-0.5 border border-gray-300 rounded text-[11px] outline-none">
+                                            <span class="text-[11px] font-semibold text-gray-500">à</span>
+                                            <input type="time" value="${slot.end}" oninput="updatePeriodBlockSlot('${rowId}', '${block.id}', ${sIdx}, 'end', this.value)" class="px-1.5 py-0.5 border border-gray-300 rounded text-[11px] outline-none">
+                                            ${block.slots.length > 1 ? `<button type="button" onclick="removeSlotFromPeriodBlock('${rowId}', '${block.id}', ${sIdx})" class="text-red-500 font-bold ml-1 text-xs">✕</button>` : ''}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <button type="button" onclick="addSlotToPeriodBlock('${rowId}', '${block.id}')" class="text-[11px] text-blue-600 font-bold hover:underline flex items-center">+ Ajouter un créneau</button>
+                            </div>
+                        `;
+                    }
+                    
+                    html += `
+                        <div class="bg-white p-4 border border-gray-200 rounded-lg shadow-sm relative">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs font-bold text-gray-700">${isMain ? block.name : 'Sous-groupe spécifique d\'horaires'}</span>
+                                ${!isMain ? `<button type="button" onclick="removeSubScheduleBlock('${rowId}', '${block.id}')" class="text-red-500 hover:text-red-700 text-[11px] font-semibold">Retirer ce sous-groupe</button>` : ''}
+                            </div>
+                            
+                            <div class="mb-3 bg-gray-50/50 p-2.5 rounded border border-gray-150">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <span class="text-[11px] font-bold text-gray-400 uppercase">Raccourcis semaine :</span>
+                                    <div class="flex gap-1">${weekdayShortcutsHTML}</div>
+                                </div>
+                                <div class="flex flex-wrap gap-1">${datePillsHTML}</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-end bg-gray-50/30 p-3 rounded border border-gray-150">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-gray-500 mb-0.5">Format de l'horaire :</label>
+                                    <select onchange="updatePeriodBlockTimeType('${rowId}', '${block.id}', this.value)" class="w-full px-2 py-1 border border-gray-300 rounded text-xs outline-none">
+                                        <option value="slots" ${block.timeType === 'slots' ? 'selected' : ''}>Plages horaires</option>
+                                        <option value="fixed" ${block.timeType === 'fixed' ? 'selected' : ''}>Horaire fixe</option>
+                                    </select>
+                                </div>
+                                <div class="col-span-2">${inputAreaHTML}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+                periodCard.innerHTML = html;
+                container.appendChild(periodCard);
+            });
+            
+            if (totalDatesCount === 0) {
+                container.innerHTML = `<div class="p-4 bg-yellow-50 text-yellow-800 text-sm rounded-lg border border-yellow-200">Veuillez d'abord sélectionner une option ci-dessus (ex: Plages de dates) et renseigner des jours valides.</div>`;
+            }
+        }
+
+        function formatDateFr(isoStr) {
+            if (!isoStr) return '';
+            const parts = isoStr.split('-');
+            if (parts.length !== 3) return isoStr;
+            return parts[2] + '/' + parts[1] + '/' + parts[0];
+        }
+
+        // --- GÉNÉRATION ÉCRAN RÉCAPITULATIF (ÉTAPE 5) ---
+        function generateRecap() {
+            const name = document.getElementById('eventName').value || 'Non renseigné';
+            const address = document.getElementById('eventAddress').value || 'Non renseigné';
+            const desc = document.getElementById('eventDesc').value || 'Non renseigné';
+
+            let datesHTML = '';
+            
+            Object.keys(computedPeriods).forEach((rowId) => {
+                const periodDates = computedPeriods[rowId] || [];
+                if (periodDates.length === 0) return;
+                
+                const periodTitle = computedPeriods[rowId].title || "Période";
+                const blocks = periodSchedules[rowId] || [];
+                const activeBlocks = blocks.filter(b => b.dates.length > 0);
+                
+                datesHTML += `<div class="bg-gray-100 p-2 font-bold text-gray-800 text-xs mt-3 rounded">${periodTitle}</div>`;
+                
+                activeBlocks.forEach(block => {
+                    let timeDetails = block.timeType === 'slots' ? block.slots.map(s => `${s.start} - ${s.end}`).join(' | ') : `À ${block.fixedTime}`;
+                    const dateLabels = block.dates.map(id => (periodDates.find(d => d.id === id) || {label: id}).label).join(', ');
+                    datesHTML += `
+                        <div class="ml-4 bg-gray-50 p-2.5 border-l-2 border-blue-500 text-xs mt-2 rounded-r">
+                            <span class="font-bold text-blue-900">${block.name} — ${timeDetails}</span>
+                            <p class="text-gray-600 mt-1 leading-relaxed"><strong>Jours :</strong> ${dateLabels}</p>
+                        </div>
+                    `;
+                });
+            });
+            
+            if (!datesHTML) datesHTML = '<p class="text-xs text-red-500 font-bold">Aucune date configurée.</p>';
+
+            const audienceChecked = Array.from(document.querySelectorAll('input[name="audience"]:checked')).map(cb => cb.value).join(', ') || 'Tout public';
+            const pricingType = document.querySelector('input[name="pricingType"]:checked').value;
+            const priceDetails = pricingType === 'payant' ? document.getElementById('eventPrice').value : 'Gratuit';
+
+            document.getElementById('recap-container').innerHTML = `
+                <div class="space-y-4 text-sm">
+                    <div class="border border-gray-200 rounded-xl p-4 bg-white shadow-sm">
+                        <h4 class="text-xs font-bold text-gray-900 border-b pb-1.5 mb-2 uppercase tracking-wider">1. PRÉSENTATION</h4>
+                        <p class="mb-1"><strong>Nom :</strong> ${name}</p>
+                        <p class="mb-3"><strong>Lieu :</strong> ${address}</p>
+                        <p class="text-xs text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-200 whitespace-pre-line"><strong>Description :</strong><br>${desc}</p>
+                    </div>
+                    <div class="border border-gray-200 rounded-xl p-4 bg-white shadow-sm">
+                        <h4 class="text-xs font-bold text-gray-900 border-b pb-1.5 mb-2 uppercase tracking-wider">2. Dates & Horaires par période</h4>
+                        <div class="space-y-1">${datesHTML}</div>
+                    </div>
+                    <div class="border border-gray-200 rounded-xl p-4 bg-white shadow-sm">
+                        <h4 class="text-xs font-bold text-gray-900 border-b pb-1.5 mb-2 uppercase tracking-wider">3. Public & Tarification</h4>
+                        <p><strong>Public :</strong> ${audienceChecked}</p>
+                        <p><strong>Tarif :</strong> ${priceDetails}</p>
+                    </div>
+                    <div class="border border-gray-200 rounded-xl p-4 bg-white shadow-sm">
+                        <h4 class="text-xs font-bold text-gray-900 border-b pb-1.5 mb-2 uppercase tracking-wider">4. Organisateur</h4>
+                        <p><strong>Nom :</strong> ${document.getElementById('orgName').value} | <strong>Tel :</strong> ${document.getElementById('orgPhone').value} | <strong>Email :</strong> ${document.getElementById('orgEmail').value}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialisation vierge au démarrage
+        calculateDates();
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            alert("Formulaire envoyé avec succès ! Structure finale disponible dans votre console (F12).");
+            console.log("Données consolidées et compartimentées par période :", periodSchedules);
+        }
+    </script>
+</body>
+</html>
